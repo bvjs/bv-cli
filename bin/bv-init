@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+
+const download = require('download-git-repo')
+const program = require('commander')
+const fs = require('fs')
+const ora = require('ora')
+const inquirer = require('inquirer')
+const exists = fs.existsSync
+
+/**
+ * Usage.
+ */
+
+program
+  .usage('<template-name> [project-name]')
+  .option('-c, --clone', 'use git clone')
+  .option('--offline', 'use cached template')
+
+inquirer.prompt([{
+  type: 'confirm',
+  message: '新建项目',
+  name: 'ok',
+}]).then(answers => {
+  if (answers.ok) {
+    console.log('ok')
+  }
+})
