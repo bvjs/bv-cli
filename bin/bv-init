@@ -1,27 +1,88 @@
 #!/usr/bin/env node
 
-const download = require('download-git-repo')
+const logger = require('../lib/logger')
+const download = require('../lib/download')
+const getTemplateList = require('../lib/getTemplateList')
+const generate = require('../lib/generate')
+const chalk = require('chalk')
 const program = require('commander')
-const fs = require('fs')
-const ora = require('ora')
+const exists = require('fs').existsSync
 const inquirer = require('inquirer')
-const exists = fs.existsSync
+const path = require('path')
+// 搜索类型，模糊搜索
+const fuzzy = require('fuzzy')
+const sep = chalk.gray(' - ')
 
 /**
  * Usage.
  */
+program.usage('[project-name]')
 
-program
-  .usage('<template-name> [project-name]')
-  .option('-c, --clone', 'use git clone')
-  .option('--offline', 'use cached template')
 
-inquirer.prompt([{
-  type: 'confirm',
-  message: '新建项目',
-  name: 'ok',
-}]).then(answers => {
-  if (answers.ok) {
-    console.log('ok')
-  }
+/**
+ * Help.
+ */
+program.on('--help', () => {
+  console.log()
+  console.log('  Examples:')
+  console.log()
+  console.log(chalk.gray('    # generate a new project from a template'))
+  console.log('    $ bv init my-app')
+  console.log()
+}).parse(process.argv)
+
+/**
+ * 为了美观留白
+ */
+process.on('exit', () => {
+  console.log()
 })
+
+const destDirName = program.args[0]
+const clone = program.clone || false
+const inplace = !destDirName || destDirName === '.'
+const dest = path.resolve(destDirName || '.')
+
+// 如果目录已经存在
+if (exists(dest)) {
+  inquirer.prompt([{
+    type: 'confirm',
+    message: inplace
+      ? 'Generate project in current directory?'
+      : 'Target directory exists. Continue?',
+    name: 'ok'
+  }]).then(answers => {
+    if (answers.ok) {
+      Main()
+    }
+  }).catch(logger.fatal)
+} else {
+  Main()
+}
+
+/**
+ * 入口
+ */
+function Main() {
+  const templateList = getTemplateList()
+  inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'))
+  inquirer.prompt([{
+    type: 'autocomplete',
+    message: 'Select template:',
+    name: 'from',
+    pageSize: 10,
+    source: (answers, key = '') => {
+      return templateList.then(templates => {
+        const fuzzyResult = fuzzy.filter(key, templates.map(repo => repo.name + sep + repo.description))
+        return fuzzyResult.map(el => el.original)
+      })
+    },
+  }]).then(answers => {
+    const template = answers.from.split(sep)[0]
+    download.download(template, clone).then(() => {
+      generate(destDirName, path.join(download.templateLocalPath, template), dest, err => {
+        
+      })
+    })
+  })
+}
