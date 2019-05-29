@@ -1,14 +1,19 @@
 {
   "name": "bv-cli",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "生成器",
   "main": "index.js",
+  "keywords": [
+    "bv-cil",
+    "react"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
     "bv": "bin/bv",
-    "bv-init": "bin/bv-init"
+    "bv-init": "bin/bv-init",
+    "bv-list": "bin/bv-list"
   },
   "repository": {
     "type": "git",
@@ -21,6 +26,7 @@
   },
   "homepage": "https://github.com/shihuajunze/bv-cli#readme",
   "dependencies": {
+    "async": "^3.0.1",
     "chalk": "^2.4.2",
     "commander": "^2.20.0",
     "consolidate": "^0.15.1",
