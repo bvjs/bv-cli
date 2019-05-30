@@ -87,6 +87,7 @@ function Main() {
 
           })
           .catch(err => {
+            console.log(11)
             logger.error('Failed to generate ' + template + ': ' + err.message.trim())
           })
       })

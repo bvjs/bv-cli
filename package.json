@@ -1,6 +1,6 @@
 {
   "name": "bv-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "生成器",
   "main": "index.js",
   "keywords": [
@@ -19,7 +19,7 @@
     "type": "git",
     "url": "git+https://github.com/shihuajunze/bv-cli.git"
   },
-  "author": "",
+  "author": "雨后黄昏 <shihuajunze@163.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/shihuajunze/bv-cli/issues"
